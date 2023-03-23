@@ -1,0 +1,56 @@
+let login = 'vezkasol3a';
+let password = login;
+
+describe('Регистрация, вход, выбор товара, оформление заказа', () => {
+  beforeEach(() => {
+    cy.visit('https://www.demoblaze.com/') // открытие главной страницы
+  })
+
+    it('Регистрация', () => {
+
+    cy.get('[id=signin2]').click() // клик на регистрацию
+    cy.wait(1000) 
+    cy.get('[id=sign-username]').type(login) // ввод логина
+    cy.wait(1000)    
+    cy.get('[id=sign-password]').type(password) // ввод пароля
+    cy.get('#signInModal > div > div > div.modal-footer > button.btn.btn-primary').click() // клик зарегистрироваться
+    cy.wait(1000)  
+  })
+
+     
+    it('Вход в аккаунт, выбор товара, оформление заказа', () => { 
+
+      cy.get('[id=login2]').click() // клик войти в аккаунт
+      cy.wait(1000)
+      cy.get('[id=loginusername]').type(login) // ввод логина
+      cy.wait(1000)
+      cy.get('[id=loginpassword]').type(password) // ввод пароля
+      cy.wait(1000)
+      cy.get('.btn.btn-primary').eq(2).click() // клик войти
+
+      cy.get('#tbodyid > div:nth-child(1) > div > div > h4 > a').click(); // клик на самсунг
+      cy.get('#tbodyid > div.row > div > a').click() // добавление в корзину самсунга
+      cy.contains('Home').click() // клик на главную
+      cy.contains('Laptops').click() // клик категория ноутбуки
+      cy.contains('Sony vaio i5').click() // клик на ноутбук сони
+      cy.get('#tbodyid > div.row > div > a').click() // добавление в корзину ноутбука сони
+      cy.get('[id=cartur]').click() // клик корзина
+
+      cy.get('#page-wrapper > div > div.col-lg-1 > button').click(); // клик сделать заказ
+      cy.wait(1000)
+      cy.get('#name').type('Benjamin') // заполнить поле имени
+
+      cy.get('#country').type('Ncountry') // заполнить поле страны
+
+      cy.get('#city').type('Ncity') // заполнить поле города
+
+      cy.get('#card').type('1234432112340000') // заполнить поле  номера карты
+
+      cy.get('#month').type('03') // заполнить поле месяца карты
+
+      cy.get('#year').click().type('28') // заполнить поле года карты
+
+      cy.get('#orderModal > div > div > div.modal-footer > button.btn.btn-primary').click(); // клик оформить заказ
+
+    })
+  })
