@@ -126,4 +126,4 @@ it('Страница Samsung galaxy s6 содержит обязательные
     cy.get('[id=more-information]').should('exist') 
     cy.get('.btn-success').should('exist') 
   })
-})
+});
