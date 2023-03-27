@@ -1,0 +1,60 @@
+
+describe('Проверка корректности расчета общей стоимости товаров в корзине', () => {
+
+  let price1; // цена первого товара
+  let price2; // цена второго товара
+  let price3; // цена третьего товара
+  let priceTotal; // общая стоимость товаров
+  let priceTC;  // общая стоимость товаров в корзине
+
+before('',() => {
+
+  cy.visit('https://www.demoblaze.com')
+  cy.contains('Phones').click()
+  cy.contains('Nokia lumia 1520').click()
+  cy.get('.price-container').invoke('text').then((price) => {
+    price1 = price;
+  })  
+  cy.wait(1000)
+  cy.contains('Add to cart').click()
+
+  cy.contains('Home').click()
+  cy.contains('Laptops').click()
+  cy.contains('MacBook air').click()
+  cy.get('.price-container').invoke('text').then((price) => {
+    price2 = price;
+  })
+  cy.wait(1000)
+  cy.contains('Add to cart').click()
+
+
+  cy.contains('Home').click()
+  cy.contains('Monitors').click()
+  cy.contains('Apple monitor 24').click()
+  cy.get('.price-container').invoke('text').then((price) => {
+    price3 = price;
+  })
+  cy.wait(1000)
+  cy.contains('Add to cart').click()
+
+  cy.contains('Cart').click()
+  cy.wait(3000)
+  cy.get('#totalp').invoke('text').then((price) => {
+    priceTC = price;
+  })
+
+})
+
+it('Общая стоимость товаров корректно отображается в корзине', () => {
+  price1 = price1.replace(/\D/g, '') // оставляем в переменной только число 
+  price1 = +price1; // приводим к типу number
+  price2 = price2.replace(/\D/g, '')
+  price2 = +price2;
+  price3 = price3.replace(/\D/g, '')
+  price3 = +price3;
+  priceTC = +priceTC
+  priceTotal = price1 + price2 + price3;
+  expect(priceTC).to.eq(priceTotal)
+  })
+
+})
