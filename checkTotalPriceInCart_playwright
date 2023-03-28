@@ -1,0 +1,53 @@
+
+  const {test, expect} = require ('@playwright/test');
+
+  test('Общая стоимость товаров выбранных пользователем товаров в корзине рассчитывается корректно', async ({page}) => {
+
+    await page.goto('https://www.demoblaze.com');
+
+    await page.getByRole('link', {name: 'Samsung galaxy s6'}).click();
+
+
+
+    let price1 = await page.textContent('.price-container') // внести текст элемента в переменную 
+    price1 = price1.replace(/\D/g, ''); // очистить число от других символов
+    price1 = +price1;
+
+    await page.getByRole('link', { name: 'Add to cart' }).click();
+
+    await page.getByRole('link', { name: 'Home (current)' }).click();
+
+    await page.getByRole('link', { name: 'Laptops' }).click();
+
+    await page.getByRole('link', { name: 'Sony vaio i5' }).click();
+
+    let price2 = await page.textContent('.price-container');
+    price2 = price2.replace(/\D/g, ''); 
+    price2 = +price2; 
+
+    await page.getByRole('link', { name: 'Add to cart' }).click();
+
+    await page.getByRole('link', { name: 'Home (current)' }).click();
+    await page.waitForTimeout(1000)
+    await page.getByRole('link', { name: 'Monitors' }).click();
+    
+
+    await page.getByText('Apple monitor 24').click()
+    
+
+    let price3 = await page.textContent('.price-container');
+    price3 = price3.replace(/\D/g, ''); 
+    price3 = +price3;
+
+    await page.getByRole('link', { name: 'Add to cart' }).click();
+
+    await page.click('#cartur');
+    await page.waitForTimeout(3000)
+
+
+    let totalP = price1 + price2 + price3;
+    let totalPriceInCart = await page.textContent('#totalp')
+    totalPriceInCart = +totalPriceInCart
+    expect(totalPriceInCart).toBe(totalP)
+
+  })
