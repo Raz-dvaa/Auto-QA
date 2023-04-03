@@ -1,0 +1,107 @@
+
+
+const { test, expect } = require('@playwright/test');
+
+
+test.describe('Тест цепочки запросов', () => {
+
+const url = 'https://petstore.swagger.io/v2';
+let userName = "Vven";
+
+    test('На POST запрос создание пользователя приходит корректный ответ', async ({request}) => {
+
+        let response = await request.post(`${url}/user`, { 
+            data: {
+                    "id": 77,
+                    "username": userName,
+                    "firstName": "firstVenka",
+                    "lastName": "lastVenka",
+                    "email": "venka@mail.com",
+                    "password": "secretPass",
+                    "phone": "88005553535",
+                    "userStatus": 1
+            }
+        }
+        );
+        let responseBody = await response.json();
+
+        expect(response.status()).toBe(200);
+        expect(responseBody.code).toBe(200);
+        expect(responseBody.type).toBe("unknown");
+        expect(responseBody.message).toBe("77");
+    });
+
+    test('На GET запрос получения созданного пользователя приходит корректный ответ', async ({request}) => {
+
+        let response = await request.get(`${url}/user/${userName}`);
+        let responseBody = await response.json();
+
+        expect(response.status()).toBe(200);
+        expect(responseBody.id).toBe(77);
+        expect(responseBody.username).toBe(userName);
+        expect(responseBody.firstName).toBe('firstVenka');
+        expect(responseBody.lastName).toBe('lastVenka');
+        expect(responseBody.email).toBe('venka@mail.com');
+        expect(responseBody.password).toBe('secretPass');
+        expect(responseBody.phone).toBe('88005553535');
+        expect(responseBody.userStatus).toBe(1);
+    });
+
+    test('На PUT запрос изменения пользователя приходит корректный ответ', async ({request}) => {
+        let response = await request.put(`${url}/user/${userName}`, 
+        { 
+            data : {
+                    "id": 99,
+                    "username": "vavilen",
+                    "firstName": "firstvavilen",
+                    "lastName": "lastvavilen",
+                    "email": "vavilen@mail.com",
+                    "password": "secretVass",
+                    "phone": "88007772222",
+                    "userStatus": 0
+            }
+         });
+        let responseBody = await response.json();
+
+        expect(response.status()).toBe(200);
+        expect(responseBody.code).toBe(200);
+        expect(responseBody.type).toBe('unknown');
+        expect(responseBody.message).toBe('99');
+    });
+
+    test('После отправки PUT запроса GET запрос возвращает корректные измененные данные', async ({request}) => {
+
+        let response = await request.get(`${url}/user/vavilen`);
+        let responseBody = await response.json();
+
+        expect(response.status()).toBe(200);
+        expect(responseBody.id).toBe(99);
+        expect(responseBody.username).toBe('vavilen');
+        expect(responseBody.firstName).toBe('firstvavilen');
+        expect(responseBody.lastName).toBe('lastvavilen');
+        expect(responseBody.email).toBe('vavilen@mail.com');
+        expect(responseBody.password).toBe('secretVass');
+        expect(responseBody.phone).toBe('88007772222');
+        expect(responseBody.userStatus).toBe(0);
+    });
+
+    test('На DELETE запрос приходит корректный ответ', async ({request}) => {
+        let response = await request.delete(`${url}/user/vavilen`);
+        let responseBody = await response.json();
+
+        expect(response.status()).toBe(200);
+        expect(responseBody.code).toBe(200);
+        expect(responseBody.type).toBe('unknown');
+        expect(responseBody.message).toBe('vavilen');
+    })
+
+    test('После удаления пользователя запрос GET возвращает ответ об отсутствии пользователя и статус 404', async ({request}) => {
+        let response = await request.get(`${url}/user/vavilen`);
+        let responseBody = await response.json();
+        
+        expect(response.status()).toBe(404);
+        expect(responseBody.code).toBe(1);
+        expect(responseBody.type).toBe('error');
+        expect(responseBody.message).toBe('User not found');
+    });
+})
